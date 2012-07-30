@@ -1,0 +1,48 @@
+<% content_for :js do %>
+<script src="http://maps.google.com/maps/api/js?sensor=false"></script>
+<script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+<script>
+    $(function() {
+        var latitude = <%= @location.latitude %>
+        var longitude = <%= @location.longitude %>
+
+        var mapholder = document.getElementById("mapholder")
+        var mapcenter = new google.maps.LatLng(latitude, longitude)
+        var myOptions = {
+            zoom: 14,
+            center: mapcenter,
+            mapTypeId: google.maps.MapTypeId.SATELLITE, // ROADMAP, SATELLITE, HYBRID, TERRAIN
+            mapTypeControl: false,
+            navigationControlOptions: { style: google.maps.NavigationControlStyle.SMALL }
+        };
+        var map = new google.maps.Map(document.getElementById("mapholder"), myOptions);
+        var marker = new google.maps.Marker({ position: mapcenter, map: map, title: "Your current position!" });
+        alert("<%= notice %>");
+    });
+</script>
+<% end %>
+<section>
+  <article>
+    <%= link_to(image_tag('logo.png'), { :controller => 'locations', :action => 'index'})  %>
+  </article>
+  <article>
+    You've checked in your location successfully!
+  </article>
+  <article>
+    <table>
+      <tr>
+        <td>
+          <h1> You checked in ... </h1>
+          User: <%= @location.user %><br/>
+          Latitude: <%= @location.latitude %><br/>
+          Longitude: <%= @location.longitude %><br/>
+          Browser: <%= @location.browser %><br/>
+          Memo: <%= @location.memo %><br/>
+        </td>
+        <td>
+          <div id="mapholder" style="width:600px;height:300px"></div><br/>
+        </td>
+      </tr>
+    </table>
+  </article>
+</section>

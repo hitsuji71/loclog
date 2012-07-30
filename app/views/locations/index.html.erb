@@ -1,0 +1,69 @@
+<% content_for :js do %>
+<script src="http://maps.google.com/maps/api/js?sensor=false"></script>
+<script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+<script>
+  $(function(){
+    $.ajax({
+      url:"locations.json?" + document.URL.split("?")[1],
+      cache:false,
+      dataType:"json",
+      success:function(json){
+        var data = jsonRequest(json);
+        initialize(data);
+      }
+    });
+  });
+
+  function jsonRequest(json){
+    var data = [];
+    var n = json.length;
+    for(var i = 0 ; i < n ; i++){
+      data.push(json[i]);
+    }
+    return data;
+  }
+
+  function initialize(data){
+    var op = {
+      zoom: 10,
+      center: new google.maps.LatLng(35.680872, 139.767628),
+      mapTypeId: google.maps.MapTypeId.SATELLITE
+    };
+    var map = new google.maps.Map(document.getElementById("mapholder"), op);
+    for(var i=0 ; i < data.length ; i++){
+      var location = data[i];
+      var obj = {
+        position: new google.maps.LatLng(location.latitude, location.longitude),
+        map: map,
+        title: location.user + ":\n" + location.memo + "\n(" + location.created_at + ")"
+      };
+      var marker = new google.maps.Marker(obj);
+    }
+  }
+
+</script>
+<% end %>
+<section>
+  <article>
+    <%= link_to(image_tag('logo.png'), { :controller => 'locations', :action => 'index'})  %>
+  </article>
+  <article>
+  This is a tiny sample app which collects location information.<br/>
+  This app uses HTML5 Geolocation and Facebook OAuth API.
+  </article>
+  <article>
+    <%= link_to(image_tag('checkin.png'), { :controller => 'locations', :action => 'checkin'})  %>
+  </article>
+  <article>
+    <h1>Location History Map</h1>
+    <%= form_tag({ :controller => 'locations', :action => 'index'}, :method => 'get') do %>
+      Username: <%= text_field_tag 'q_uname', @query[:q_uname], {:size => 30} %>
+      Memo: <%= text_field_tag 'q_memo', @query[:q_memo], {:size => 30} %>
+      UserAgent: <%= text_field_tag 'q_uagent', @query[:q_uagent], {:size => 30} %>
+      <%= submit_tag 'Search' %>
+    <% end %>
+  </article>
+  <article>
+    <div id="mapholder" style="width:900px;height:600px"></div><br/>
+  </article>
+</section>

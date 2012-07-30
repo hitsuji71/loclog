@@ -1,0 +1,72 @@
+<% content_for :js do %>
+<script src="http://maps.google.com/maps/api/js?sensor=false"></script>
+<script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+<script>
+    $(function() {
+        var geolocationSupport;
+        if (navigator.geolocation) {
+            geolocationSupport = document.getElementById("yes");
+            geolocationSupport.style.visibility = "visible"
+
+            navigator.geolocation.getCurrentPosition(displayGeolocation);
+        } else {
+            geolocationSupport = document.getElementById("no");
+            geolocationSupport.style.visibility = "hidden"
+        }
+    });
+
+    function displayGeolocation(geolocation) {
+        var latitude = geolocation.coords.latitude;
+        var longitude = geolocation.coords.longitude;
+
+        document.getElementById("location_latitude").value = latitude;
+        document.getElementById("location_latitude").readOnly = true;
+        document.getElementById("location_longitude").value = longitude;
+        document.getElementById("location_longitude").readOnly = true;
+
+        document.getElementById("location_browser").value = navigator.userAgent;
+
+        var mapholder = document.getElementById("mapholder")
+        var mapcenter = new google.maps.LatLng(latitude, longitude)
+        var myOptions = {
+            zoom: 14,
+            center: mapcenter,
+            mapTypeId: google.maps.MapTypeId.SATELLITE, // ROADMAP, SATELLITE, HYBRID, TERRAIN
+            mapTypeControl: false,
+            navigationControlOptions: { style: google.maps.NavigationControlStyle.SMALL }
+        };
+        var map = new google.maps.Map(document.getElementById("mapholder"), myOptions);
+        var marker = new google.maps.Marker({ position: mapcenter, map: map, title: "Your current position!" });
+    }
+</script>
+<% end %>
+<section>
+  <article>
+    <%= link_to(image_tag('logo.png'), { :controller => 'locations', :action => 'index'})  %>
+  </article>
+  <article>
+    Check in your Location.<br />
+    <span id="yes" style="visibility:hidden">Your web browser supports <b>HTML5 Geolocation API</b>.</span>
+    <span id="no" style="visibility:hidden">Your web browser does not support <b>HTML5 Geolocation API</b>.</span><br /><br />
+  </article>
+  <article>
+    <%= form_for(@location) do |f| %>
+      <table>
+        <tr>
+          <td>
+            Facebook ID: <%= @client.me.info["username"] %>
+            <%= f.hidden_field :user, {:value => @client.me.info["username"]} %><br/>
+            Latitude: <%= f.text_field :latitude, { :size => 50} %><br/>
+            Longitude: <%= f.text_field :longitude, { :size => 50} %><br/>
+            Memo: <%= f.text_area :memo, { :cols => 50, :rows => 10} %><br/>
+          </td>
+          <td>
+            <div id="mapholder" style="width:600px;height:300px"></div><br/>
+          </td>
+        </tr>
+      </table>
+      UserAgent: <%= f.text_field :browser, { :size => 200, :readonly => true} %><br/>
+      <%= f.submit 'Check In!', :type => :image, :src => '/assets/checkin.png' %>
+    <% end %>
+  </article>
+</section>
