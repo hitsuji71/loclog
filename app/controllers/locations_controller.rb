@@ -3,7 +3,8 @@ require 'facebook_oauth'
 
 class LocationsController < ApplicationController
 
-  CALLBACK_URL    = 'http://localhost:3000/locations/new'
+#  CALLBACK_URL    = 'http://localhost:3000/locations/new'
+  CALLBACK_URL    = 'http://loclog.herokuapp.com/locations/new'
   CONSUMER_KEY    = '429436863773560'
   CONSUMER_SECRET = 'ccd5453a473496ebd7ea258fae4c0fdf'
 
