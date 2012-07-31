@@ -16,6 +16,7 @@ class LocationsController < ApplicationController
 
     respond_to do |format|
       format.html
+      format.xml { render :xml => @locations}
       format.json { render :json => @locations}
     end
   end
